@@ -7,3 +7,6 @@ const saveUser = async ({phoneNumber, hash, salt}) => {
     return await user.save();
 }
 
+
+
+module.exports.saveUser = saveUser;

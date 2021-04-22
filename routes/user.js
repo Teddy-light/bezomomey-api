@@ -1,27 +1,25 @@
 const router = require('express').Router();
-const passport = require('passport');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const auth = require('../core/utils/auth');
 
 
-router.post('/register', function (req, res, next) {
-    User.findOne({username: req.body.username})
+router.post('/register', (req, res, next) => {
+    User.findOne({username: req.body.phonenumber})
         .then((user => {
             if (!user) {
-                const saltHash = utils.genPassword(req.body.password);
+                const saltHash = auth.genPassword(req.body.password);
                 const salt = saltHash.salt;
                 const hash = saltHash.hash;
-
                 const newUser = new User({
-                    username: req.body.username,
+                    phonenumber: req.body.phonenumber,
                     hash: hash,
                     salt: salt
                 });
 
                 newUser.save()
                     .then((user) => {
-                        const jwt = utils.issueJWT(user);
-
+                        const jwt = auth.issueJWT(user);
                         res.json({success: true, user: user, token: jwt.token, expiresIn: jwt.expires});
                     })
                     .catch(err => next(err));
@@ -31,3 +29,5 @@ router.post('/register', function (req, res, next) {
         }))
         .catch(err => next(err));
 });
+
+module.exports = router;
